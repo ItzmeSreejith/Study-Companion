@@ -1,0 +1,974 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Study Companion — Smart Academic Workload Optimizer for students and faculty. Balance deadlines, avoid peak stress, and improve learning outcomes.">
+  <meta name="theme-color" content="#0f172a">
+  <title>Study Companion — Smart Academic Workload Optimizer</title>
+  
+  <!-- Modern Typography from Google Fonts with fallback -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+  
+  <!-- Chart.js via CDN (Fallback is built directly into script.js if offline) -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+
+  <!-- Application Stylesheet -->
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <div class="app-layout" id="appLayout">
+    <!-- Desktop & Tablet Sidebar -->
+    <aside class="sidebar" id="sidebar" aria-label="Main Navigation">
+      <div class="sidebar-header">
+        <div class="brand-logo" aria-hidden="true">
+          <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/>
+            <circle cx="12" cy="12" r="10" stroke-width="1.5" stroke-dasharray="2 3"/>
+          </svg>
+        </div>
+        <div class="brand-info">
+          <h1 class="brand-title">Study Companion</h1>
+          <span class="brand-tagline">Academic Workload Optimizer</span>
+        </div>
+      </div>
+
+      <nav class="sidebar-nav">
+        <ul class="nav-list" role="menubar">
+          <li role="none">
+            <button class="nav-btn active" data-tab="dashboard" id="nav-dashboard" role="menuitem">
+              <svg class="nav-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/></svg>
+              <span>Dashboard</span>
+            </button>
+          </li>
+          <li role="none">
+            <button class="nav-btn" data-tab="assessments" id="nav-assessments" role="menuitem">
+              <svg class="nav-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/></svg>
+              <span>Assessments</span>
+              <span class="badge nav-badge" id="sidebarAssessmentCount">0</span>
+            </button>
+          </li>
+          <li role="none">
+            <button class="nav-btn" data-tab="calendar" id="nav-calendar" role="menuitem">
+              <svg class="nav-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+              <span>Calendar & Heatmap</span>
+            </button>
+          </li>
+          <li role="none">
+            <button class="nav-btn" data-tab="optimizer" id="nav-optimizer" role="menuitem">
+              <svg class="nav-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m12 3-1.912 5.813a2 2 0 0 1-1.275 1.275L3 12l5.813 1.912a2 2 0 0 1 1.275 1.275L12 21l1.912-5.813a2 2 0 0 1 1.275-1.275L21 12l-5.813-1.912a2 2 0 0 1-1.275-1.275L12 3Z"/></svg>
+              <span>Smart Optimizer</span>
+              <span class="badge badge-accent nav-badge-pulse" id="sidebarOptimizerBadge">Active</span>
+            </button>
+          </li>
+          <li role="none">
+            <button class="nav-btn" data-tab="tests" id="nav-tests" role="menuitem">
+              <svg class="nav-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m9 11 3 3L22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg>
+              <span>Algorithm & Tests</span>
+            </button>
+          </li>
+          <li role="none">
+            <button class="nav-btn" data-tab="settings" id="nav-settings" role="menuitem">
+              <svg class="nav-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
+              <span>Settings</span>
+            </button>
+          </li>
+        </ul>
+      </nav>
+
+      <div class="sidebar-footer">
+        <div class="sidebar-status-box">
+          <div class="status-indicator-dot"></div>
+          <div class="status-text">
+            <span class="status-title">Academic Session</span>
+            <span class="status-subtitle" id="sidebarSessionText">Semester 5 — Demo</span>
+          </div>
+        </div>
+        <div class="sidebar-actions">
+          <button class="btn btn-sm btn-outline-secondary w-100" id="btnQuickDemoLoad" title="Load realistic sample data">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+            Load Demo Data
+          </button>
+        </div>
+      </div>
+    </aside>
+
+    <!-- Main Content Area -->
+    <main class="main-content" id="mainContent">
+      <!-- Top Bar / Header -->
+      <header class="topbar">
+        <div class="topbar-left">
+          <button class="btn btn-icon mobile-menu-btn" id="mobileMenuToggle" aria-label="Toggle navigation menu">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
+          </button>
+          <div class="header-breadcrumbs">
+            <span class="breadcrumb-app">Study Companion</span>
+            <span class="breadcrumb-separator">/</span>
+            <span class="breadcrumb-active" id="currentSectionTitle">Dashboard</span>
+          </div>
+        </div>
+
+        <div class="topbar-right">
+          <!-- Undo button if snapshot exists -->
+          <button class="btn btn-sm btn-outline-warning hidden" id="btnGlobalUndo" title="Undo the most recent optimization">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="1 4 1 10 7 10"/><path d="M3.51 15a9 9 0 1 0 2.13-9.36L1 10"/></svg>
+            <span>Undo Optimization</span>
+          </button>
+
+          <!-- Primary Quick Action -->
+          <button class="btn btn-sm btn-primary" id="btnHeaderOptimize">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="m12 3-1.912 5.813a2 2 0 0 1-1.275 1.275L3 12l5.813 1.912a2 2 0 0 1 1.275 1.275L12 21l1.912-5.813a2 2 0 0 1 1.275-1.275L21 12l-5.813-1.912a2 2 0 0 1-1.275-1.275L12 3Z"/></svg>
+            <span>Optimize Schedule</span>
+          </button>
+
+          <button class="btn btn-sm btn-outline-secondary" id="btnAddAssessmentTop">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+            <span>New Assessment</span>
+          </button>
+        </div>
+      </header>
+
+      <!-- Toast & Alert container -->
+      <div id="toastContainer" class="toast-container" aria-live="polite"></div>
+
+      <!-- VIEW 1: DASHBOARD -->
+      <section class="tab-pane active" id="pane-dashboard" aria-labelledby="nav-dashboard">
+        <!-- Hackathon Banner / Demo Indicator -->
+        <div class="announcement-banner" id="demoBanner">
+          <div class="banner-content">
+            <div class="banner-icon">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg>
+            </div>
+            <div class="banner-text">
+              <strong>VJCET Education Hackathon "The Missing Piece"</strong>: 
+              <span id="demoBannerText">Demonstration Mode is active with sample computer science semester assessments.</span>
+            </div>
+          </div>
+          <div class="banner-actions">
+            <button class="btn btn-xs btn-outline-light" id="btnBannerReloadDemo">Reload Demo</button>
+            <button class="btn btn-xs btn-icon btn-ghost-light" id="btnDismissBanner" aria-label="Dismiss banner">✕</button>
+          </div>
+        </div>
+
+        <!-- Metric Stat Cards Grid -->
+        <div class="stats-grid">
+          <div class="stat-card">
+            <div class="stat-header">
+              <span class="stat-label">Total Assessments</span>
+              <div class="stat-icon-wrapper icon-blue">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+              </div>
+            </div>
+            <div class="stat-body">
+              <span class="stat-value" id="statTotalAssessments">0</span>
+              <span class="stat-context" id="statTotalAssessmentsSub">Active in semester</span>
+            </div>
+          </div>
+
+          <div class="stat-card">
+            <div class="stat-header">
+              <span class="stat-label">Due Next 7 Days</span>
+              <div class="stat-icon-wrapper icon-amber">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+              </div>
+            </div>
+            <div class="stat-body">
+              <span class="stat-value" id="statDueNext7">0</span>
+              <span class="stat-context text-warning" id="statDueNext7Sub">Immediate pressure</span>
+            </div>
+          </div>
+
+          <div class="stat-card">
+            <div class="stat-header">
+              <span class="stat-label">Week Workload Hours</span>
+              <div class="stat-icon-wrapper icon-teal">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 12h-4l-3 9L9 3l-3 9H2"/></svg>
+              </div>
+            </div>
+            <div class="stat-body">
+              <span class="stat-value" id="statCurrentWeekHours">0.0h</span>
+              <span class="stat-context" id="statCurrentWeekHoursSub">Avg ~0.0h / day</span>
+            </div>
+          </div>
+
+          <div class="stat-card" id="cardOverload">
+            <div class="stat-header">
+              <span class="stat-label">Overloaded Days</span>
+              <div class="stat-icon-wrapper icon-red" id="iconOverloadWrapper">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3Z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+              </div>
+            </div>
+            <div class="stat-body">
+              <span class="stat-value" id="statOverloadedDays">0</span>
+              <span class="stat-context" id="statOverloadContext">Days exceeding limit</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Optimizer Hero Callout Banner -->
+        <div class="hero-callout" id="heroCallout">
+          <div class="hero-callout-icon">
+            <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/><circle cx="12" cy="12" r="10"/></svg>
+          </div>
+          <div class="hero-callout-text">
+            <h2 class="hero-callout-title">Detect Deadline Clashes & Balance The Load</h2>
+            <p class="hero-callout-desc">
+              Assessments are piling up on single days. Study Companion redistributes flexible assignments within allowed date windows while keeping exam dates locked.
+            </p>
+          </div>
+          <div class="hero-callout-actions">
+            <button class="btn btn-primary btn-lg shadow-glow" id="btnHeroOptimize">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="m12 3-1.912 5.813a2 2 0 0 1-1.275 1.275L3 12l5.813 1.912a2 2 0 0 1 1.275 1.275L12 21l1.912-5.813a2 2 0 0 1 1.275-1.275L21 12l-5.813-1.912a2 2 0 0 1-1.275-1.275L12 3Z"/></svg>
+              Optimize Schedule Now
+            </button>
+          </div>
+        </div>
+
+        <!-- Main Dashboard 2-Column Section -->
+        <div class="dashboard-grid">
+          <!-- Left Column: Weekly Workload Chart -->
+          <div class="card dashboard-chart-card">
+            <div class="card-header">
+              <div>
+                <h3 class="card-title">Weekly Workload Distribution</h3>
+                <p class="card-subtitle">Estimated effort by assessment due date vs daily threshold (<span id="chartThresholdLabel">4.0h</span> max)</p>
+              </div>
+              <div class="card-header-actions">
+                <span class="badge badge-outline" id="chartWeekRangeLabel">This Week</span>
+              </div>
+            </div>
+            <div class="card-body">
+              <div class="chart-container" id="chartContainer">
+                <canvas id="weeklyWorkloadChart" height="240" aria-label="Weekly workload bar chart" role="img"></canvas>
+                <!-- Fallback Container if Chart.js is offline or fails -->
+                <div id="chartFallback" class="chart-fallback hidden"></div>
+              </div>
+              <div class="chart-legend-custom">
+                <span class="legend-item"><span class="legend-dot dot-green"></span> Manageable (&le; 3h)</span>
+                <span class="legend-item"><span class="legend-dot dot-amber"></span> Near Threshold (3.1h - 4h)</span>
+                <span class="legend-item"><span class="legend-dot dot-red"></span> Overloaded (&gt; 4h)</span>
+                <span class="legend-item"><span class="legend-dash dash-red"></span> Max Safe Threshold</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Right Column: Clashes & Upcoming Deadlines -->
+          <div class="card dashboard-deadlines-card">
+            <div class="card-header">
+              <div>
+                <h3 class="card-title">Upcoming Deadlines</h3>
+                <p class="card-subtitle">Chronological list of nearest submissions</p>
+              </div>
+              <button class="btn btn-xs btn-outline-secondary" id="btnViewAllAssessments">View All</button>
+            </div>
+            <div class="card-body p-0">
+              <div class="deadlines-list" id="dashboardDeadlinesList">
+                <!-- Dynamically populated -->
+              </div>
+            </div>
+            <div class="card-footer bg-light-muted">
+              <small class="text-muted"><span class="info-badge">Assumption</span> Each assessment's effort is counted on its due date.</small>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- VIEW 2: ASSESSMENTS MANAGEMENT -->
+      <section class="tab-pane" id="pane-assessments" aria-labelledby="nav-assessments">
+        <div class="section-header-bar">
+          <div>
+            <h2 class="section-title">Academic Assessments</h2>
+            <p class="section-subtitle">Manage assignments, lab submissions, quizzes, internal exams, and course projects</p>
+          </div>
+          <div class="section-actions">
+            <button class="btn btn-outline-danger btn-sm" id="btnConfirmClearAll" title="Clear all stored assessments">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 6h18"/><path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"/><path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"/></svg>
+              Clear All Data
+            </button>
+            <button class="btn btn-outline-secondary btn-sm" id="btnAssessmentsReloadDemo">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="1 4 1 10 7 10"/><path d="M3.51 15a9 9 0 1 0 2.13-9.36L1 10"/></svg>
+              Load Demo Data
+            </button>
+            <button class="btn btn-primary btn-sm" id="btnOpenAddModal">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+              Add Assessment
+            </button>
+          </div>
+        </div>
+
+        <!-- Filter & Search Bar -->
+        <div class="filter-card">
+          <div class="filter-row">
+            <div class="search-input-wrapper">
+              <svg class="search-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+              <input type="text" id="assessmentSearch" class="form-control search-input" placeholder="Search by title, subject, or notes...">
+            </div>
+            
+            <div class="filter-controls">
+              <select id="filterType" class="form-select form-select-sm" aria-label="Filter by type">
+                <option value="all">All Types</option>
+                <option value="assignment">Assignment</option>
+                <option value="lab">Lab Submission</option>
+                <option value="quiz">Quiz</option>
+                <option value="internal_exam">Internal Exam</option>
+                <option value="project">Project</option>
+              </select>
+
+              <select id="filterPriority" class="form-select form-select-sm" aria-label="Filter by priority">
+                <option value="all">All Priorities</option>
+                <option value="high">High Priority</option>
+                <option value="medium">Medium Priority</option>
+                <option value="low">Low Priority</option>
+              </select>
+
+              <select id="filterReschedulable" class="form-select form-select-sm" aria-label="Filter by flexibility">
+                <option value="all">All Flexibility</option>
+                <option value="reschedulable">Flexible Only</option>
+                <option value="fixed">Fixed Exams / Locked</option>
+              </select>
+
+              <select id="sortBy" class="form-select form-select-sm" aria-label="Sort assessments">
+                <option value="date-asc">Deadline (Earliest First)</option>
+                <option value="date-desc">Deadline (Latest First)</option>
+                <option value="effort-desc">Effort (High to Low)</option>
+                <option value="priority-desc">Priority (High to Low)</option>
+                <option value="title-asc">Title (A-Z)</option>
+              </select>
+            </div>
+          </div>
+        </div>
+
+        <!-- Assessments Table Card -->
+        <div class="card">
+          <div class="table-responsive">
+            <table class="table" id="assessmentsTable">
+              <thead>
+                <tr>
+                  <th scope="col">Assessment & Subject</th>
+                  <th scope="col">Type</th>
+                  <th scope="col">Scheduled Deadline</th>
+                  <th scope="col">Permitted Range</th>
+                  <th scope="col">Effort (Hours)</th>
+                  <th scope="col">Priority</th>
+                  <th scope="col">Reschedulable</th>
+                  <th scope="col" class="text-right">Actions</th>
+                </tr>
+              </thead>
+              <tbody id="assessmentsTableBody">
+                <!-- Rendered dynamically -->
+              </tbody>
+            </table>
+          </div>
+          <!-- Empty State -->
+          <div id="assessmentsEmptyState" class="empty-state hidden">
+            <div class="empty-state-icon">
+              <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="12" cy="12" r="10"/><path d="M16 16s-1.5-2-4-2-4 2-4 2"/><line x1="9" y1="9" x2="9.01" y2="9"/><line x1="15" y1="9" x2="15.01" y2="9"/></svg>
+            </div>
+            <h3 class="empty-state-title">No Assessments Found</h3>
+            <p class="empty-state-text">No assessments match your current filters. Add a new assessment or load realistic demo data.</p>
+            <div class="empty-state-actions">
+              <button class="btn btn-outline-secondary" id="btnEmptyLoadDemo">Load Demo Data</button>
+              <button class="btn btn-primary" id="btnEmptyAdd">Add First Assessment</button>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- VIEW 3: CALENDAR & WORKLOAD HEATMAP -->
+      <section class="tab-pane" id="pane-calendar" aria-labelledby="nav-calendar">
+        <div class="section-header-bar">
+          <div>
+            <h2 class="section-title">Workload Calendar & Heatmap</h2>
+            <p class="section-subtitle">Visual timeline of daily assessment density and peak stress indicators</p>
+          </div>
+          <div class="section-actions">
+            <div class="view-mode-toggle" role="group" aria-label="Calendar view selector">
+              <button class="btn btn-sm btn-primary" id="btnViewWeekly">Weekly Calendar</button>
+              <button class="btn btn-sm btn-outline-secondary" id="btnViewHeatmap">Semester Heatmap</button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Weekly View Sub-pane -->
+        <div id="weeklyCalendarContainer" class="calendar-subview">
+          <!-- Calendar Navigation Controls -->
+          <div class="calendar-nav-bar">
+            <div class="calendar-nav-left">
+              <button class="btn btn-sm btn-outline-secondary" id="btnCalPrevWeek" aria-label="Previous week">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="15 18 9 12 15 6"/></svg>
+                Previous
+              </button>
+              <button class="btn btn-sm btn-outline-secondary" id="btnCalToday">Current Week</button>
+              <button class="btn btn-sm btn-outline-secondary" id="btnCalNextWeek" aria-label="Next week">
+                Next
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg>
+              </button>
+            </div>
+
+            <div class="calendar-current-title">
+              <h3 id="calendarWeekDisplayTitle">Week of Oct 26 – Nov 1</h3>
+            </div>
+
+            <div class="calendar-nav-right">
+              <div class="threshold-pill" title="Configured safe daily threshold">
+                <span>Daily Max: </span>
+                <strong id="calThresholdDisplay">4.0h</strong>
+              </div>
+            </div>
+          </div>
+
+          <!-- Weekly Days Grid -->
+          <div class="week-days-grid" id="weekDaysGrid">
+            <!-- Dynamically populated 7 day columns -->
+          </div>
+        </div>
+
+        <!-- Heatmap Sub-pane (Hidden by default, toggled via tab) -->
+        <div id="heatmapContainer" class="calendar-subview hidden">
+          <div class="card mb-4">
+            <div class="card-header">
+              <div>
+                <h3 class="card-title">Daily Workload Intensity Matrix</h3>
+                <p class="card-subtitle">Complete overview of academic pressure across 4 weeks with numerical hours and status levels</p>
+              </div>
+              <div class="heatmap-threshold-box">
+                <label for="heatmapThresholdInput" class="form-label-inline">Workload Threshold:</label>
+                <div class="input-group-sm">
+                  <input type="number" id="heatmapThresholdInput" min="1" max="16" step="0.5" value="4.0" class="form-control form-control-sm text-center" style="width: 70px;">
+                  <span class="input-addon">hrs/day</span>
+                </div>
+              </div>
+            </div>
+            <div class="card-body">
+              <!-- Heatmap Grid -->
+              <div class="heatmap-matrix-wrapper">
+                <div class="heatmap-matrix" id="heatmapMatrix">
+                  <!-- Generated via script.js -->
+                </div>
+              </div>
+
+              <!-- Heatmap Legend -->
+              <div class="heatmap-legend-bar">
+                <span class="legend-title">Workload Density Legend:</span>
+                <div class="legend-scale">
+                  <span class="scale-item"><span class="scale-box box-level-0"></span> 0h None</span>
+                  <span class="scale-item"><span class="scale-box box-level-1"></span> &le; 2h Light</span>
+                  <span class="scale-item"><span class="scale-box box-level-2"></span> 2.1h - 4h Moderate</span>
+                  <span class="scale-item"><span class="scale-box box-level-3"></span> 4.1h - 6h Heavy (Warning)</span>
+                  <span class="scale-item"><span class="scale-box box-level-4"></span> &gt; 6h Severe Overload</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- VIEW 4: SMART SCHEDULE OPTIMIZER (THE INNOVATION) -->
+      <section class="tab-pane" id="pane-optimizer" aria-labelledby="nav-optimizer">
+        <div class="section-header-bar">
+          <div>
+            <h2 class="section-title">Smart Schedule Optimizer</h2>
+            <p class="section-subtitle">Real, deterministic constraint-aware scheduling algorithm designed for education fairness</p>
+          </div>
+          <div class="section-actions">
+            <button class="btn btn-outline-secondary btn-sm" id="btnOptimizerInfoToggle">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg>
+              How It Works
+            </button>
+            <button class="btn btn-primary btn-sm" id="btnRunOptimizerMain">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m12 3-1.912 5.813a2 2 0 0 1-1.275 1.275L3 12l5.813 1.912a2 2 0 0 1 1.275 1.275L12 21l1.912-5.813a2 2 0 0 1 1.275-1.275L21 12l-5.813-1.912a2 2 0 0 1-1.275-1.275L12 3Z"/></svg>
+              Run Optimization
+            </button>
+          </div>
+        </div>
+
+        <!-- Algorithm Principles Card (Collapsible) -->
+        <div class="card mb-4 bg-light-card" id="optimizerInfoCard">
+          <div class="card-body">
+            <h4 class="card-title-sm text-navy mb-2">Deterministic Optimization Engine Principles</h4>
+            <div class="principles-grid">
+              <div class="principle-item">
+                <span class="principle-badge">1. Hard Constraints</span>
+                <p>Never schedules before <code>earliestAllowedDate</code> or after <code>latestAllowedDate</code>. Internal exams remain 100% fixed unless marked reschedulable.</p>
+              </div>
+              <div class="principle-item">
+                <span class="principle-badge">2. Workload Conservation</span>
+                <p>Total academic effort is strictly conserved (&sum; Hours Before == &sum; Hours After). We redistribute, never erase.</p>
+              </div>
+              <div class="principle-item">
+                <span class="principle-badge">3. Peak & Overload Minimization</span>
+                <p>Applies quadratic penalty to workloads exceeding daily threshold (&tau; = 4.0h) to actively squash dangerous workload spikes.</p>
+              </div>
+              <div class="principle-item">
+                <span class="principle-badge">4. Inertia & Determinism</span>
+                <p>Penalizes unnecessary date shifts and respects high-priority tasks. Deterministic tie-breaking ensures 100% reproducible proposals.</p>
+              </div>
+            </div>
+            <div class="mt-3 text-muted font-sm">
+              <strong>V1 Model Note:</strong> Effort hours are assigned to each assessment's deadline. Date shifts preserve syllabus integrity while giving students breathing room between milestones.
+            </div>
+          </div>
+        </div>
+
+        <!-- Optimization Parameter Bar -->
+        <div class="card mb-4">
+          <div class="card-body">
+            <div class="optimizer-params-row">
+              <div class="param-col">
+                <label for="optMaxDailyThreshold" class="form-label">Daily Capacity Threshold (&tau;):</label>
+                <div class="input-group">
+                  <input type="number" id="optMaxDailyThreshold" class="form-control" value="4.0" min="1" max="12" step="0.5">
+                  <span class="input-addon">hours/day</span>
+                </div>
+                <small class="text-muted">Target maximum safe effort per student day</small>
+              </div>
+
+              <div class="param-col">
+                <label for="optInertiaWeight" class="form-label">Date Stability Preference:</label>
+                <select id="optInertiaWeight" class="form-select">
+                  <option value="balanced" selected>Balanced (Standard Balance vs Changes)</option>
+                  <option value="aggressive">Aggressive (Flatten Peaks At All Costs)</option>
+                  <option value="conservative">Conservative (Minimal Date Alterations)</option>
+                </select>
+                <small class="text-muted">Balances willingness to shift deadlines vs peak flattening</small>
+              </div>
+
+              <div class="param-col-action">
+                <button class="btn btn-primary btn-lg w-100" id="btnExecuteOptimizer">
+                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m12 3-1.912 5.813a2 2 0 0 1-1.275 1.275L3 12l5.813 1.912a2 2 0 0 1 1.275 1.275L12 21l1.912-5.813a2 2 0 0 1 1.275-1.275L21 12l-5.813-1.912a2 2 0 0 1-1.275-1.275L12 3Z"/></svg>
+                  Generate Optimized Plan
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Proposal Comparison Section (Populated upon running optimizer) -->
+        <div id="optimizerProposalSection" class="hidden">
+          <!-- Proposal Action Header -->
+          <div class="proposal-banner">
+            <div class="proposal-banner-info">
+              <h3 class="proposal-banner-title">Proposed Schedule Optimization Ready for Review</h3>
+              <p class="proposal-banner-sub">Carefully review the proposed deadline rebalancing below. No changes are applied until you approve.</p>
+            </div>
+            <div class="proposal-banner-actions">
+              <button class="btn btn-outline-secondary" id="btnCancelProposal">Discard Proposal</button>
+              <button class="btn btn-success shadow-glow-green" id="btnApplyProposal">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>
+                Approve & Apply Schedule
+              </button>
+            </div>
+          </div>
+
+          <!-- Before vs After Metric Comparison Cards -->
+          <div class="comparison-stats-grid">
+            <div class="comparison-card">
+              <div class="comp-label">Maximum Daily Workload</div>
+              <div class="comp-values">
+                <span class="comp-old" id="compMaxOld">0.0h</span>
+                <span class="comp-arrow">&rarr;</span>
+                <span class="comp-new text-success" id="compMaxNew">0.0h</span>
+              </div>
+              <div class="comp-delta" id="compMaxDelta">0% Peak Reduction</div>
+            </div>
+
+            <div class="comparison-card">
+              <div class="comp-label">Overloaded Days (> <span id="compThresholdLabel">4.0h</span>)</div>
+              <div class="comp-values">
+                <span class="comp-old" id="compOverloadOld">0</span>
+                <span class="comp-arrow">&rarr;</span>
+                <span class="comp-new text-success" id="compOverloadNew">0</span>
+              </div>
+              <div class="comp-delta" id="compOverloadDelta">0 Days Resolved</div>
+            </div>
+
+            <div class="comparison-card">
+              <div class="comp-label">Total Workload Conserved</div>
+              <div class="comp-values">
+                <span class="comp-old" id="compTotalOld">0.0h</span>
+                <span class="comp-arrow">&equiv;</span>
+                <span class="comp-new text-navy" id="compTotalNew">0.0h</span>
+              </div>
+              <div class="comp-delta text-muted">100% Workload Preserved</div>
+            </div>
+
+            <div class="comparison-card">
+              <div class="comp-label">Deadlines Adjusted</div>
+              <div class="comp-values">
+                <span class="comp-count" id="compShiftCount">0</span>
+                <span class="comp-count-sub">of <span id="compTotalAssessmentsCount">0</span> assessments</span>
+              </div>
+              <div class="comp-delta" id="compShiftContext">Within approved date windows</div>
+            </div>
+          </div>
+
+          <!-- Before & After Comparison Charts Side-by-Side -->
+          <div class="dashboard-grid mb-4">
+            <div class="card">
+              <div class="card-header bg-subtle-red">
+                <h4 class="card-title-sm text-danger">Original Schedule Workload</h4>
+                <span class="badge badge-danger">Before</span>
+              </div>
+              <div class="card-body">
+                <div class="chart-container" style="height: 200px;">
+                  <canvas id="chartOriginal" aria-label="Original schedule workload chart"></canvas>
+                  <div id="chartOriginalFallback" class="chart-fallback hidden"></div>
+                </div>
+              </div>
+            </div>
+
+            <div class="card">
+              <div class="card-header bg-subtle-green">
+                <h4 class="card-title-sm text-success">Optimized Schedule Workload</h4>
+                <span class="badge badge-success">Proposed</span>
+              </div>
+              <div class="card-body">
+                <div class="chart-container" style="height: 200px;">
+                  <canvas id="chartProposed" aria-label="Proposed schedule workload chart"></canvas>
+                  <div id="chartProposedFallback" class="chart-fallback hidden"></div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Detailed Assessment Relocation Table -->
+          <div class="card mb-4">
+            <div class="card-header">
+              <h3 class="card-title">Proposed Schedule Adjustments</h3>
+              <p class="card-subtitle">Examines every assessment deadline relocation, constraint check, and shift distance</p>
+            </div>
+            <div class="table-responsive">
+              <table class="table" id="proposalChangesTable">
+                <thead>
+                  <tr>
+                    <th scope="col">Assessment</th>
+                    <th scope="col">Subject & Type</th>
+                    <th scope="col">Original Date</th>
+                    <th scope="col">Proposed Date</th>
+                    <th scope="col">Shift Distance</th>
+                    <th scope="col">Allowed Window</th>
+                    <th scope="col">Optimization Rationale</th>
+                  </tr>
+                </thead>
+                <tbody id="proposalChangesBody">
+                  <!-- Populated dynamically -->
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+
+        <!-- Optimizer Idle State -->
+        <div id="optimizerIdleState" class="empty-state">
+          <div class="empty-state-icon">
+            <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+          </div>
+          <h3 class="empty-state-title">Ready to Balance Your Academic Schedule</h3>
+          <p class="empty-state-text">Click "Run Optimization" above to calculate a balanced assessment timetable that honors every constraint, protects exam dates, and squashes workload spikes.</p>
+        </div>
+      </section>
+
+      <!-- VIEW 5: ALGORITHM SPECIFICATION & AUTOMATED VERIFICATION TESTS -->
+      <section class="tab-pane" id="pane-tests" aria-labelledby="nav-tests">
+        <div class="section-header-bar">
+          <div>
+            <h2 class="section-title">Algorithm Specification & Verification Suite</h2>
+            <p class="section-subtitle">Formal proofs and automated unit tests running live in your browser</p>
+          </div>
+          <div class="section-actions">
+            <button class="btn btn-primary btn-sm" id="btnRunVerificationSuite">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="5 3 19 12 5 21 5 3"/></svg>
+              Execute All Automated Tests
+            </button>
+          </div>
+        </div>
+
+        <!-- Test Suite Summary Box -->
+        <div class="card mb-4">
+          <div class="card-header">
+            <div>
+              <h3 class="card-title">Live Constraint & Optimizer Integrity Suite</h3>
+              <p class="card-subtitle">Validates adherence to the 6 core mathematical requirements</p>
+            </div>
+            <div id="testSuiteBadge" class="badge badge-secondary">Ready to run</div>
+          </div>
+          <div class="card-body">
+            <div class="test-results-grid" id="testResultsGrid">
+              <!-- Dynamically populated unit tests -->
+            </div>
+          </div>
+          <div class="card-footer bg-light-muted">
+            <small class="text-muted">All tests run deterministically directly inside the client engine using localStorage isolation.</small>
+          </div>
+        </div>
+
+        <!-- Algorithm Description Card -->
+        <div class="card mb-4">
+          <div class="card-header">
+            <h3 class="card-title">Formal Algorithm Architecture</h3>
+          </div>
+          <div class="card-body font-sm">
+            <h4 class="text-navy">1. Objective Function</h4>
+            <p>For each day $t \in [D_{start}, D_{end}]$, the daily workload is $W(t) = \sum_{a \in A, deadline(a) = t} effort(a)$. We minimize:</p>
+            <div class="code-box">
+              <code>Cost = &alpha; &times; max(W(t)) + &beta; &times; &sum; max(0, W(t) - &tau;)&sup2; + &gamma; &times; &sum; (Dist(orig, new))&sup2; &times; PriorityWeight</code>
+            </div>
+            
+            <h4 class="text-navy mt-3">2. Invariable Invariants & Hard Constraints</h4>
+            <ul>
+              <li><strong>Boundary Guarantee:</strong> $\forall a \in A, \quad earliestAllowedDate(a) \le currentDeadline(a) \le latestAllowedDate(a)$.</li>
+              <li><strong>Exam Immutability:</strong> If $type(a) == 'internal\_exam'$ and $reschedulable == false$, $currentDeadline(a) \equiv originalDeadline(a)$.</li>
+              <li><strong>Conservation of Workload:</strong> $\sum_{a \in A} effort(a)_{before} = \sum_{a \in A} effort(a)_{after}$. No work is lost or fabricated.</li>
+              <li><strong>Determinism:</strong> Ties are broken by evaluating the smallest date difference $|d - originalDeadline|$, followed by lexicographical ID order.</li>
+            </ul>
+          </div>
+        </div>
+      </section>
+
+      <!-- VIEW 6: SETTINGS & DATA CONFIGURATION -->
+      <section class="tab-pane" id="pane-settings" aria-labelledby="nav-settings">
+        <div class="section-header-bar">
+          <div>
+            <h2 class="section-title">System Settings & Data Management</h2>
+            <p class="section-subtitle">Configure workload thresholds, study window defaults, and data backups</p>
+          </div>
+        </div>
+
+        <div class="settings-grid">
+          <!-- Thresholds & Workload Policy -->
+          <div class="card">
+            <div class="card-header">
+              <h3 class="card-title">Academic Workload Policy</h3>
+            </div>
+            <div class="card-body">
+              <form id="settingsForm">
+                <div class="form-group mb-3">
+                  <label for="settingDailyThreshold" class="form-label">Default Daily Workload Threshold</label>
+                  <div class="input-group">
+                    <input type="number" id="settingDailyThreshold" class="form-control" min="1" max="16" step="0.5" value="4.0">
+                    <span class="input-addon">hours</span>
+                  </div>
+                  <small class="form-hint">Days with total effort exceeding this value are flagged as overloaded.</small>
+                </div>
+
+                <div class="form-group mb-3">
+                  <label for="settingCautionThreshold" class="form-label">Caution Warning Threshold</label>
+                  <div class="input-group">
+                    <input type="number" id="settingCautionThreshold" class="form-control" min="1" max="15" step="0.5" value="3.0">
+                    <span class="input-addon">hours</span>
+                  </div>
+                  <small class="form-hint">Days nearing capacity are highlighted in amber.</small>
+                </div>
+
+                <div class="form-group mb-3">
+                  <label for="settingDefaultEarliestOffset" class="form-label">Default Earliest Allowed Offset</label>
+                  <div class="input-group">
+                    <input type="number" id="settingDefaultEarliestOffset" class="form-control" min="0" max="30" value="5">
+                    <span class="input-addon">days before deadline</span>
+                  </div>
+                  <small class="form-hint">Default study prep window when creating a new assignment.</small>
+                </div>
+
+                <div class="form-group mb-3">
+                  <label for="settingDefaultLatestOffset" class="form-label">Default Grace Extension Window</label>
+                  <div class="input-group">
+                    <input type="number" id="settingDefaultLatestOffset" class="form-control" min="0" max="30" value="3">
+                    <span class="input-addon">days after deadline</span>
+                  </div>
+                  <small class="form-hint">Maximum permitted delay for flexible submissions.</small>
+                </div>
+
+                <button type="submit" class="btn btn-primary" id="btnSaveSettings">Save Preferences</button>
+              </form>
+            </div>
+          </div>
+
+          <!-- Data Management & Backups -->
+          <div class="card">
+            <div class="card-header">
+              <h3 class="card-title">Data Storage & Demo Presets</h3>
+            </div>
+            <div class="card-body">
+              <div class="data-action-item mb-4">
+                <h4 class="card-title-sm">Demo Data Scenarios</h4>
+                <p class="text-muted font-sm">Populate the app with realistic student schedules to test various clash patterns.</p>
+                <div class="btn-group-responsive">
+                  <button class="btn btn-outline-primary btn-sm" id="btnLoadDemoStandard">Standard Semester (Clashes & Fixed Exam)</button>
+                  <button class="btn btn-outline-secondary btn-sm" id="btnLoadDemoProjectRush">Project Crunch Week</button>
+                </div>
+              </div>
+
+              <div class="data-action-item mb-4">
+                <h4 class="card-title-sm">Export & Import Schedule</h4>
+                <p class="text-muted font-sm">Export your schedule to a JSON file or restore from a previously exported backup.</p>
+                <div class="btn-group-responsive">
+                  <button class="btn btn-outline-secondary btn-sm" id="btnExportJson">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+                    Export JSON
+                  </button>
+                  <label class="btn btn-outline-secondary btn-sm mb-0 cursor-pointer">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+                    Import JSON
+                    <input type="file" id="importJsonInput" accept=".json" class="hidden">
+                  </label>
+                </div>
+              </div>
+
+              <div class="data-action-item danger-zone">
+                <h4 class="card-title-sm text-danger">Reset & Clear Storage</h4>
+                <p class="text-muted font-sm">Clears all assessments, settings, and cached optimization snapshots from localStorage.</p>
+                <button class="btn btn-danger btn-sm" id="btnClearAllLocalStorage">Reset Application State</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <!-- MODAL: ADD / EDIT ASSESSMENT -->
+  <div class="modal-backdrop hidden" id="assessmentModal" role="dialog" aria-modal="true" aria-labelledby="modalAssessmentTitle">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h3 class="modal-title" id="modalAssessmentTitle">Add Assessment</h3>
+          <button class="btn-close" id="btnCloseAssessmentModal" aria-label="Close dialog">&times;</button>
+        </div>
+
+        <form id="assessmentForm" novalidate>
+          <input type="hidden" id="assessmentFormId">
+
+          <div class="modal-body">
+            <!-- Validation Banner -->
+            <div id="modalFormAlert" class="alert alert-danger hidden" role="alert"></div>
+
+            <div class="form-row">
+              <div class="form-group flex-2">
+                <label for="formTitle" class="form-label required">Assessment Title</label>
+                <input type="text" id="formTitle" class="form-control" placeholder="e.g. Database Normalization Assignment" required maxlength="120">
+              </div>
+
+              <div class="form-group flex-1">
+                <label for="formSubject" class="form-label required">Subject / Course</label>
+                <input type="text" id="formSubject" class="form-control" placeholder="e.g. CS301 DBMS" required maxlength="50">
+              </div>
+            </div>
+
+            <div class="form-row">
+              <div class="form-group flex-1">
+                <label for="formType" class="form-label required">Assessment Type</label>
+                <select id="formType" class="form-select" required>
+                  <option value="assignment">Assignment</option>
+                  <option value="lab">Lab Submission</option>
+                  <option value="quiz">Quiz</option>
+                  <option value="internal_exam">Internal Exam</option>
+                  <option value="project">Project</option>
+                </select>
+              </div>
+
+              <div class="form-group flex-1">
+                <label for="formPriority" class="form-label required">Priority Level</label>
+                <select id="formPriority" class="form-select" required>
+                  <option value="low">Low</option>
+                  <option value="medium" selected>Medium</option>
+                  <option value="high">High</option>
+                </select>
+              </div>
+
+              <div class="form-group flex-1">
+                <label for="formEffort" class="form-label required">Estimated Effort (Hours)</label>
+                <input type="number" id="formEffort" class="form-control" min="0.5" max="40" step="0.5" value="3.0" required>
+              </div>
+            </div>
+
+            <div class="form-row">
+              <div class="form-group flex-1">
+                <label for="formDeadline" class="form-label required">Scheduled Deadline</label>
+                <input type="date" id="formDeadline" class="form-control" required>
+              </div>
+
+              <div class="form-group flex-1">
+                <label for="formEarliest" class="form-label required">Earliest Allowed Date</label>
+                <input type="date" id="formEarliest" class="form-control" required>
+                <small class="form-hint">Cannot be submitted before this</small>
+              </div>
+
+              <div class="form-group flex-1">
+                <label for="formLatest" class="form-label required">Latest Permitted Deadline</label>
+                <input type="date" id="formLatest" class="form-control" required>
+                <small class="form-hint">Hard deadline ceiling</small>
+              </div>
+            </div>
+
+            <div class="form-group mb-3">
+              <div class="form-check">
+                <input type="checkbox" id="formReschedulable" class="form-check-input" checked>
+                <label for="formReschedulable" class="form-check-label">
+                  <strong>Allow optimizer to reschedule this deadline</strong>
+                  <span class="d-block text-muted font-xs">Internal exams are locked by default to maintain institutional scheduling rules.</span>
+                </label>
+              </div>
+            </div>
+
+            <div class="form-group">
+              <label for="formNotes" class="form-label">Optional Notes or Instructions</label>
+              <textarea id="formNotes" class="form-control" rows="2" placeholder="e.g. Involves ER diagram drawing and SQL queries..." maxlength="300"></textarea>
+            </div>
+          </div>
+
+          <div class="modal-footer">
+            <button type="button" class="btn btn-outline-secondary" id="btnCancelAssessmentModal">Cancel</button>
+            <button type="submit" class="btn btn-primary" id="btnSubmitAssessmentForm">Save Assessment</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL: ASSESSMENT DETAILS VIEW -->
+  <div class="modal-backdrop hidden" id="assessmentDetailsModal" role="dialog" aria-modal="true" aria-labelledby="modalDetailsTitle">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <div class="d-flex align-items-center gap-2">
+            <span id="detailsTypeBadge" class="badge">Type</span>
+            <h3 class="modal-title" id="modalDetailsTitle">Assessment Details</h3>
+          </div>
+          <button class="btn-close" id="btnCloseDetailsModal" aria-label="Close dialog">&times;</button>
+        </div>
+        <div class="modal-body" id="detailsModalBody">
+          <!-- Dynamically populated -->
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-outline-secondary" id="btnCloseDetailsBtn">Close</button>
+          <button type="button" class="btn btn-primary" id="btnEditFromDetails">Edit Assessment</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- CONFIRMATION DIALOG MODAL -->
+  <div class="modal-backdrop hidden" id="confirmModal" role="dialog" aria-modal="true" aria-labelledby="confirmModalTitle">
+    <div class="modal-dialog modal-dialog-sm">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h3 class="modal-title" id="confirmModalTitle">Confirm Action</h3>
+          <button class="btn-close" id="btnCloseConfirmModal" aria-label="Close dialog">&times;</button>
+        </div>
+        <div class="modal-body">
+          <p id="confirmModalMessage" class="text-secondary">Are you sure you want to proceed?</p>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-outline-secondary" id="btnConfirmCancel">Cancel</button>
+          <button type="button" class="btn btn-danger" id="btnConfirmAccept">Confirm</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Application Script -->
+  <script src="script.js"></script>
+</body>
+</html>
